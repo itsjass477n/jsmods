@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Timer Link Page</title>
+<style>
+  /* Reset */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .container {
+    background: white;
+    width: 90vw;
+    max-width: 320px;
+    padding: 30px 20px;
+    border-radius: 20px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    text-align: center;
+  }
+  /* Circle Timer */
+  .timer-circle {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 30px;
+  }
+  svg {
+    transform: rotate(-90deg);
+    width: 150px;
+    height: 150px;
+  }
+  circle.bg {
+    fill: none;
+    stroke: #e6e6e6;
+    stroke-width: 12;
+  }
+  circle.fg {
+    fill: none;
+    stroke: #1e90ff;
+    stroke-width: 12;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+  }
+  .timer-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #1e90ff;
+  }
+  /* Button */
+  button#getLinkBtn {
+    background-color: #28a745;
+    border: none;
+    padding: 15px 0;
+    width: 100%;
+    font-size: 1.25rem;
+    color: white;
+    border-radius: 12px;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transition: background-color 0.3s ease;
+    margin-bottom: 15px;
+  }
+  button#getLinkBtn.enabled {
+    cursor: pointer;
+    opacity: 1;
+    background-color: #218838;
+  }
+  button#getLinkBtn:focus {
+    outline: none;
+    box-shadow: 0 0 8px #218838;
+  }
+  /* Telegram button */
+  #telegramBtn {
+    background-color: #0088cc; /* Telegram bright blue */
+    border: none;
+    padding: 12px 0;
+    width: 100%;
+    font-size: 1.1rem;
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 3px 8px rgba(0,136,204,0.5);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  #telegramBtn:hover {
+    background-color: #007ab8; /* Slightly darker blue */
+    box-shadow: 0 5px 12px rgba(0,122,184,0.6);
+  }
+  #telegramBtn:focus {
+    outline: none;
+    box-shadow: 0 0 10px #007ab8;
+  }
+  /* Telegram icon */
+  #telegramBtn svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="timer-circle">
+    <svg>
+      <circle class="bg" cx="75" cy="75" r="65"></circle>
+      <circle class="fg" cx="75" cy="75" r="65" stroke-dasharray="408" stroke-dashoffset="0"></circle>
+    </svg>
+    <div class="timer-text" id="timerText">10</div>
+  </div>
+  <button id="getLinkBtn" disabled>GET LINK</button>
+  <button id="telegramBtn" aria-label="Join Telegram"> 
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" >
+      <path d="M9.04 16.57l-.37 5.41c.53 0 .77-.23 1.05-.5l2.5-2.38 5.2 3.8c.96.53 1.64.25 1.89-.89l3.43-16.21c.32-1.49-.55-2.08-1.5-1.72L2.38 9.65c-1.46.57-1.44 1.39-.25 1.79l4.89 1.53 11.38-7.18c.53-.32 1.02-.15.62.2"/>
+    </svg>
+    Join Telegram
+  </button>
+</div>
+
+<script>
+  const FULL_DASH_ARRAY = 408; // circumference of circle = 2 * PI * 65
+  const TIME_LIMIT = 10; // seconds
+
+  const fgCircle = document.querySelector('circle.fg');
+  const timerText = document.getElementById('timerText');
+  const getLinkBtn = document.getElementById('getLinkBtn');
+  const telegramBtn = document.getElementById('telegramBtn');
+
+  let timePassed = 0;
+  let timeLeft = TIME_LIMIT;
+  let timerInterval;
+
+  // Links
+  const linkToOpen = "https://example.com"; // Change this to your actual GET LINK
+  const telegramLink = "https://t.me/yourchannel"; // Change this to your actual Telegram link
+
+  function startTimer() {
+    timerInterval = setInterval(() => {
+      timePassed += 1;
+      timeLeft = TIME_LIMIT - timePassed;
+
+      // Update timer text
+      timerText.textContent = timeLeft >= 0 ? timeLeft : 0;
+
+      // Calculate stroke-dashoffset for circle animation
+      const offset = FULL_DASH_ARRAY - (FULL_DASH_ARRAY * timePassed) / TIME_LIMIT;
+      fgCircle.style.strokeDashoffset = offset;
+
+      // When timer ends
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        timerText.textContent = "0";
+        getLinkBtn.disabled = false;
+        getLinkBtn.classList.add('enabled');
+        getLinkBtn.style.cursor = 'pointer';
+      }
+    }, 1000);
+  }
+
+  getLinkBtn.addEventListener('click', () => {
+    if (!getLinkBtn.disabled) {
+      window.open(linkToOpen, '_blank', 'noopener,noreferrer');
+    }
+  });
+
+  telegramBtn.addEventListener('click', () => {
+    window.open(telegramLink, '_blank', 'noopener,noreferrer');
+  });
+
+  // Initialize stroke offset for the animation
+  fgCircle.style.strokeDasharray = FULL_DASH_ARRAY;
+  fgCircle.style.strokeDashoffset = 0;
+
+  startTimer();
+</script>
+
+</body>
+</html>

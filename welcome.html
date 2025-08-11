@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Welcome - JS MODS</title>
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#00796b" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="favicon.ico" />
+
+  <style>
+    /* Reset & base */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f0f4f8, #ffffff); /* cool white gradient */
+      color: #004d40; /* dark text for contrast */
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .welcome-container {
+      max-width: 400px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 18px;
+      padding: 40px 30px;
+      box-shadow: 0 4px 30px rgba(0, 77, 64, 0.1);
+      backdrop-filter: blur(10px);
+      animation: fadeInUp 1.5s ease forwards;
+      opacity: 0;
+      color: #004d40; /* text inside container */
+    }
+
+    .welcome-logo {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-shadow: none; /* remove shadow for clarity */
+      margin-bottom: 18px;
+      user-select: text;
+      color: #00796b;
+    }
+
+    .welcome-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      margin-bottom: 30px;
+      color: #004d40cc;
+      user-select: text;
+    }
+
+    button.get-started {
+      width: 100%;
+      padding: 16px 0;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 700;
+      color: #ffffff;
+      background: #00796b;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      box-shadow: 0 8px 15px rgba(0, 121, 107, 0.45);
+      transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.2s ease;
+      user-select: none;
+      outline-offset: 4px;
+    }
+
+    /* Button Microinteractions */
+    button.get-started:hover,
+    button.get-started:focus {
+      background: #004d40;
+      box-shadow: 0 10px 20px rgba(0, 77, 64, 0.7);
+      outline: 3px solid #00ffbf;
+      outline-offset: 6px;
+      transform: scale(1.05);
+    }
+    button.get-started:active {
+      transform: scale(0.98);
+      box-shadow: 0 6px 12px rgba(0, 77, 64, 0.8);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main
+    class="welcome-container"
+    role="main"
+    aria-label="Welcome screen"
+    tabindex="0"
+  >
+    <div class="welcome-logo" aria-live="polite" aria-atomic="true">JS MODS</div>
+    <div class="welcome-subtitle">Mods that can beat everyone</div>
+    <button
+      class="get-started"
+      aria-label="Get started button"
+      tabindex="0"
+    >Get Started</button>
+    <footer
+      style="margin-top: 28px; font-size: 0.85rem; color: #004d4080; user-select: text;"
+    >
+      &copy; 2025 JS MODS. All rights reserved.
+    </footer>
+  </main>
+
+  <script>
+    const getStartedBtn = document.querySelector('.get-started');
+    const mainContainer = document.querySelector('.welcome-container');
+
+    getStartedBtn.addEventListener('click', () => {
+      // Navigate to next screen (example)
+      window.location.href = 'privacy.html';
+    });
+
+    // Accessibility: enable button with Enter or Space keys
+    getStartedBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        getStartedBtn.click();
+      }
+    });
+
+    // Focus main container on load for screen readers
+    window.addEventListener('load', () => {
+      mainContainer.focus();
+    });
+  </script>
+</body>
+</html>

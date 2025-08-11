@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>JS MODS - Home</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%; width: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff; user-select: none;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+    body { padding: 0; display: flex; flex-direction: column; height: 100vh; }
+
+    /* Loader */
+    #loader {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+    .spinner {
+      width: 60px; height: 60px;
+      border: 6px solid #e0f2f1;
+      border-top: 6px solid #00796b;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Header */
+    header {
+      display: flex; align-items: center;
+      padding: 15px 20px; background: #00796b; color: white;
+      user-select: none; box-shadow: 0 3px 8px rgb(0 121 107 / 0.4);
+      position: relative; z-index: 1100;
+      animation: slideDown 0.4s ease;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Hamburger */
+    #hamburger {
+      cursor: pointer; width: 28px; height: 22px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      margin-right: 15px; flex-shrink: 0;
+    }
+    #hamburger span {
+      display: block; height: 4px; background: white;
+      border-radius: 3px; transition: all 0.3s ease;
+    }
+
+    /* Search bar */
+    #searchForm { flex-grow: 1; position: relative; }
+    #searchInput {
+      width: 100%; padding: 8px 12px; border-radius: 20px; border: none;
+      font-size: 1rem; font-weight: 500; outline: none; color: #004d40;
+      background: #e0f2f1; transition: background 0.3s ease;
+    }
+    #searchInput::placeholder { color: #00796bcc; font-style: italic; }
+    #searchInput:focus { background: #b2dfdb; box-shadow: 0 0 6px #004d40aa; }
+
+    /* Main content */
+    main {
+      flex-grow: 1; padding: 20px; background: #f9fdfc;
+      overflow-y: auto; user-select: text;
+      padding-bottom: 70px; /* space for bottom nav */
+    }
+
+    /* Image Grid */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 18px 14px; margin-top: 15px;
+    }
+
+    /* Image card */
+    .image-card {
+      background: white; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 3px 8px rgb(0 121 107 / 0.15);
+      cursor: pointer; transition: transform 0.2s ease;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; padding: 10px 8px; height: 180px;
+      position: relative; opacity: 0; transform: scale(0.9);
+      animation: cardPop 0.4s ease forwards;
+    }
+    @keyframes cardPop { to { opacity: 1; transform: scale(1); } }
+    .image-card img {
+      max-width: 100%; max-height: 120px; object-fit: contain;
+      border-radius: 8px; margin-bottom: 8px;
+      transition: transform 0.3s ease;
+    }
+    .image-card:hover img { transform: scale(1.05); }
+    .image-title {
+      font-weight: 700; font-size: 1rem; color: #004d40;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      width: 100%;
+    }
+
+    /* Favourite Heart */
+    .fav-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(255,255,255,0.8);
+      border-radius: 50%; padding: 6px;
+      font-size: 18px; cursor: pointer; z-index: 5;
+    }
+    .fav-btn.hearted { color: red; }
+
+    /* Ripple */
+    .ripple {
+      position: absolute; border-radius: 50%;
+      transform: scale(0); animation: ripple-animation 0.6s linear;
+      background-color: rgba(0, 0, 0, 0.2); pointer-events: none;
+    }
+    @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
+
+    /* Drawer */
+    #drawer {
+      position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+      background: #fff; box-shadow: 3px 0 14px rgba(0,0,0,0.2); color: #004d40;
+      padding: 25px 30px; transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1050; display: flex; flex-direction: column;
+      border-top-right-radius: 20px; border-bottom-right-radius: 20px;
+    }
+    #drawer.open { left: 0; }
+    #drawer h2 {
+      font-size: 2rem; margin-bottom: 40px; font-weight: 900;
+      letter-spacing: 2px; color: #00796b; text-align: center;
+    }
+    #drawer nav a.drawer-link {
+      display: block; color: #00796b; text-decoration: none; font-weight: 900;
+      font-size: 1.5rem; margin-bottom: 30px; position: relative; padding-bottom: 6px;
+    }
+    #drawer nav a.drawer-link::after {
+      content: ""; position: absolute; left: 0; bottom: 0; height: 3px; width: 0;
+      background: #004d40; transition: width 0.35s ease;
+    }
+    #drawer nav a.drawer-link:hover::after { width: 100%; }
+
+    /* Overlay */
+    #overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.3); opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease; z-index: 1040;
+    }
+    #overlay.visible { opacity: 1; pointer-events: auto; }
+
+    /* Bottom Nav - Mobile App Style */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #ffffff;
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 6px 0;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
+      z-index: 1500;
+      border-top: 1px solid #ddd;
+    }
+    .bottom-nav a {
+      flex: 1;
+      text-align: center;
+      text-decoration: none;
+      font-size: 12px;
+      color: #555;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .bottom-nav a span.icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .bottom-nav a.active {
+      color: #00796b;
+      font-weight: 600;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 3000;
+      pointer-events: none;
+    }
+    #toast.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 480px) {
+      #drawer { width: 220px; }
+      #drawer nav a.drawer-link { font-size: 1.3rem; }
+      .image-card { height: 160px; }
+      .image-card img { max-height: 90px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Drawer -->
+  <nav id="drawer">
+    <h2>Menu</h2>
+    <nav>
+      <a href="about.html" class="drawer-link">ABOUT</a>
+      <a href="developer.html" class="drawer-link">DEVELOPER</a>
+      <a href="settings.html" class="drawer-link">SETTINGS</a>
+    </nav>
+  </nav>
+
+  <!-- Overlay -->
+  <div id="overlay"></div>
+
+  <header>
+    <div id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <form id="searchForm" onsubmit="event.preventDefault();">
+      <input type="search" id="searchInput" placeholder="Search..." />
+    </form>
+  </header>
+
+  <main>
+    <div class="image-grid" id="imageGrid"></div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a href="home.html" class="active">
+      <span class="icon">🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="favourites.html">
+      <span class="icon">❤️</span>
+      <span>Favourites</span>
+    </a>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDsm1U6e-4ZTi0WGBAbj1LUWOA63xpQVD0",
+      authDomain: "js-world-64c90.firebaseapp.com",
+      databaseURL: "https://js-world-64c90-default-rtdb.firebaseio.com",
+      projectId: "js-world-64c90",
+      storageBucket: "js-world-64c90.firebasestorage.app",
+      messagingSenderId: "240128005952",
+      appId: "1:240128005952:android:b7f1a21647514efbe80ca5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    const loader = document.getElementById('loader');
+    const drawer = document.getElementById('drawer');
+    const overlay = document.getElementById('overlay');
+    const hamburger = document.getElementById('hamburger');
+    const imageGrid = document.getElementById('imageGrid');
+    const searchInput = document.getElementById('searchInput');
+    const toast = document.getElementById('toast');
+    let allImages = {};
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function openDrawer() { drawer.classList.add('open'); overlay.classList.add('visible'); }
+    function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('visible'); }
+    hamburger.addEventListener('click', openDrawer);
+    overlay.addEventListener('click', closeDrawer);
+
+    function createRipple(event) {
+      const button = event.currentTarget;
+      const circle = document.createElement("span");
+      const diameter = Math.max(button.clientWidth, button.clientHeight);
+      const radius = diameter / 2;
+      circle.style.width = circle.style.height = `${diameter}px`;
+      circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+      circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+      circle.classList.add("ripple");
+      const ripple = button.getElementsByClassName("ripple")[0];
+      if (ripple) ripple.remove();
+      button.appendChild(circle);
+    }
+
+    function getFavourites() {
+      return JSON.parse(localStorage.getItem('favourites') || '[]');
+    }
+    function saveFavourites(favs) {
+      localStorage.setItem('favourites', JSON.stringify(favs));
+    }
+    function toggleFavourite(item) {
+      let favs = getFavourites();
+      const exists = favs.find(f => f.id === item.id);
+      if (exists) {
+        favs = favs.filter(f => f.id !== item.id);
+        showToast("Removed from favourites");
+      } else {
+        favs.push(item);
+        showToast("Added to favourites");
+      }
+      saveFavourites(favs);
+      renderImages(allImages);
+    }
+    function isFavourite(id) {
+      return getFavourites().some(f => f.id === id);
+    }
+
+    function renderImages(images) {
+      imageGrid.innerHTML = '';
+      const filter = searchInput.value.toLowerCase();
+      const sortedKeys = Object.keys(images).sort((a, b) => {
+        if (!isNaN(a) && !isNaN(b)) return Number(a) - Number(b);
+        return a.localeCompare(b);
+      });
+      let loadPromises = [];
+      sortedKeys.forEach(key => {
+        const image = images[key];
+        if (filter && !(image.title || '').toLowerCase().includes(filter)) return;
+        const card = document.createElement('div');
+        card.className = 'image-card';
+        card.innerHTML = `
+          <div class="fav-btn ${isFavourite(key) ? 'hearted' : ''}">❤</div>
+          <img src="${image.url || 'https://via.placeholder.com/150'}" alt="${image.title || 'Image'}" />
+          <div class="image-title">${image.title || ''}</div>
+        `;
+        // Heart click
+        card.querySelector('.fav-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          toggleFavourite({ id: key, ...image });
+        });
+        // Card click (link)
+        card.addEventListener("click", () => {
+          if (image.page) location.href = image.page;
+        });
+        imageGrid.appendChild(card);
+
+        const img = card.querySelector('img');
+        loadPromises.push(new Promise(res => {
+          if (img.complete) res();
+          else img.onload = img.onerror = res;
+        }));
+      });
+
+      Promise.all(loadPromises).then(() => {
+        loader.classList.add('hidden');
+      });
+    }
+
+    database.ref('homeImages').on('value', snapshot => {
+      const images = snapshot.val();
+      allImages = images || {};
+      renderImages(allImages);
+    });
+
+    searchInput.addEventListener('input', () => {
+      renderImages(allImages);
+    });
+  </script>
+</body>
+</html>

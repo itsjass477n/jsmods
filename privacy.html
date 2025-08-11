@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Privacy Policy - JS MODS</title>
+  <style>
+    /* Reset & base */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f0f4f8, #ffffff);
+      color: #004d40;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 20px;
+      overflow-y: auto;
+      scroll-behavior: smooth; /* for smooth scrolling */
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 40px;
+    }
+    main {
+      max-width: 600px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 18px;
+      padding: 30px 30px 40px;
+      box-shadow: 0 4px 30px rgba(0, 77, 64, 0.1);
+      backdrop-filter: blur(10px);
+      color: #004d40;
+      user-select: text;
+      scroll-margin-top: 40px; /* for smooth scroll focus offset */
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #00796b;
+    }
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .checkbox-container {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      user-select: none;
+    }
+    .checkbox-container input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+    label {
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #004d40cc;
+    }
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 14px 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      background: #00796b;
+      border: none;
+      border-radius: 40px;
+      cursor: not-allowed;
+      opacity: 0.5;
+      transition: background-color 0.3s ease, opacity 0.3s ease;
+      user-select: none;
+      position: relative;
+    }
+    button.enabled {
+      cursor: pointer;
+      opacity: 1;
+    }
+    button.enabled:hover,
+    button.enabled:focus {
+      background: #004d40;
+      outline: none;
+    }
+
+    /* Loading spinner inside button */
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid #ffffff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+    }
+    button.loading .spinner {
+      display: inline-block;
+    }
+    @keyframes spin {
+      0% { transform: translateY(-50%) rotate(0deg); }
+      100% { transform: translateY(-50%) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <main role="main" aria-label="Privacy Policy" tabindex="-1" id="mainContent">
+    <h1>Privacy Policy</h1>
+    <p>
+      At JS MODS, we respect your privacy and are committed to protecting your personal data. This policy explains how we collect, use, and safeguard your information when you use our services.
+    </p>
+    <p>
+      We collect minimal data necessary to provide the best experience and ensure the security of your interactions. Your data will never be sold or shared with third parties without your explicit consent.
+    </p>
+    <p>
+      Please read our full Terms and Conditions before proceeding. By agreeing, you acknowledge that you have understood and accepted our policies.
+    </p>
+
+    <div class="checkbox-container">
+      <input type="checkbox" id="agreeCheckbox" />
+      <label for="agreeCheckbox">I agree to the terms and conditions</label>
+    </div>
+
+    <button id="nextBtn" aria-disabled="true" disabled>
+      NEXT
+      <span class="spinner" aria-hidden="true"></span>
+    </button>
+  </main>
+
+  <script>
+    const agreeCheckbox = document.getElementById('agreeCheckbox');
+    const nextBtn = document.getElementById('nextBtn');
+    const mainContent = document.getElementById('mainContent');
+    const spinner = nextBtn.querySelector('.spinner');
+
+    // Smooth scroll to top on load
+    window.addEventListener('load', () => {
+      mainContent.focus();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Load saved checkbox state from localStorage
+    const savedAgree = localStorage.getItem('privacyAgree');
+    if(savedAgree === 'true'){
+      agreeCheckbox.checked = true;
+      nextBtn.disabled = false;
+      nextBtn.classList.add('enabled');
+      nextBtn.setAttribute('aria-disabled', 'false');
+    }
+
+    // Enable/disable NEXT button based on checkbox and save state
+    agreeCheckbox.addEventListener('change', () => {
+      if (agreeCheckbox.checked) {
+        nextBtn.disabled = false;
+        nextBtn.classList.add('enabled');
+        nextBtn.setAttribute('aria-disabled', 'false');
+        localStorage.setItem('privacyAgree', 'true');
+      } else {
+        nextBtn.disabled = true;
+        nextBtn.classList.remove('enabled');
+        nextBtn.setAttribute('aria-disabled', 'true');
+        localStorage.setItem('privacyAgree', 'false');
+      }
+    });
+
+    // Keyboard accessibility: space and enter on checkbox and button
+    agreeCheckbox.addEventListener('keydown', e => {
+      if(e.key === ' ' || e.key === 'Enter'){
+        e.preventDefault();
+        agreeCheckbox.checked = !agreeCheckbox.checked;
+        agreeCheckbox.dispatchEvent(new Event('change'));
+      }
+    });
+    nextBtn.addEventListener('keydown', e => {
+      if((e.key === ' ' || e.key === 'Enter') && !nextBtn.disabled){
+        e.preventDefault();
+        nextBtn.click();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (!agreeCheckbox.checked) {
+        // Show inline warning near checkbox (instead of alert)
+        let warning = document.getElementById('warningMessage');
+        if(!warning){
+          warning = document.createElement('div');
+          warning.id = 'warningMessage';
+          warning.style.color = 'red';
+          warning.style.marginTop = '8px';
+          warning.style.fontWeight = '700';
+          warning.textContent = '⚠️ Please agree to the terms and conditions before proceeding.';
+          agreeCheckbox.parentNode.appendChild(warning);
+          agreeCheckbox.focus();
+        }
+      } else {
+        // Remove any existing warning
+        const warning = document.getElementById('warningMessage');
+        if(warning){
+          warning.remove();
+        }
+
+        // Show loading spinner and disable button
+        nextBtn.classList.add('loading');
+        nextBtn.disabled = true;
+        nextBtn.setAttribute('aria-disabled', 'true');
+
+        // Simulate a small delay then redirect
+        setTimeout(() => {
+          window.location.href = 'key.html'; // Change to your actual next page
+        }, 1500);
+      }
+    });
+  </script>
+</body>
+</html>

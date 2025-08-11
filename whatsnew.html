@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>What's New - JS MODS</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #a8edea, #fed6e3);
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    body {
+      padding: 20px;
+    }
+    main {
+      background: rgba(255, 255, 255, 0.95);
+      max-width: 420px;
+      width: 100%;
+      border-radius: 25px;
+      padding: 30px 25px 40px;
+      box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.15),
+        inset 0 0 15px rgba(255, 255, 255, 0.7);
+      color: #004d40;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      height: 80vh;
+      overflow: hidden;
+    }
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 900;
+      text-align: center;
+      color: #00796b;
+      user-select: text;
+    }
+    /* Scrollable content */
+    .features-list {
+      overflow-y: auto;
+      padding-right: 12px;
+      margin-top: 10px;
+      flex-grow: 1;
+    }
+    /* Custom scrollbar */
+    .features-list::-webkit-scrollbar {
+      width: 8px;
+    }
+    .features-list::-webkit-scrollbar-track {
+      background: #e0f2f1;
+      border-radius: 10px;
+    }
+    .features-list::-webkit-scrollbar-thumb {
+      background: #00796b;
+      border-radius: 10px;
+    }
+
+    /* Feature item */
+    .feature-item {
+      background: #e0f2f1;
+      border-radius: 15px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0, 77, 64, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      user-select: text;
+    }
+    .feature-icon {
+      flex-shrink: 0;
+      width: 50px;
+      height: 50px;
+      background: #004d40;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #a8edea;
+      font-size: 28px;
+      box-shadow: 0 2px 8px rgba(0, 77, 64, 0.3);
+    }
+    .feature-text {
+      flex-grow: 1;
+    }
+    .feature-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #004d40;
+      margin-bottom: 4px;
+    }
+    .feature-desc {
+      font-weight: 400;
+      font-size: 0.95rem;
+      color: #00796bcc;
+      line-height: 1.3;
+    }
+
+    /* Close button */
+    button#closeBtn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: #00796b;
+      border: none;
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0, 121, 107, 0.5);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      line-height: 1;
+    }
+    button#closeBtn:hover,
+    button#closeBtn:focus {
+      background: #004d40;
+      outline: none;
+      transform: scale(1.15);
+    }
+
+    /* Responsive */
+    @media (max-width: 440px) {
+      main {
+        height: 90vh;
+        padding: 25px 20px 35px;
+        border-radius: 20px;
+      }
+      .feature-item {
+        padding: 15px 18px;
+        gap: 12px;
+      }
+      .feature-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 24px;
+      }
+      .feature-title {
+        font-size: 1.1rem;
+      }
+      .feature-desc {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main role="main" aria-label="What's new update screen">
+    <button id="closeBtn" aria-label="Close what's new screen">&times;</button>
+    <h1>What's New?</h1>
+
+    <div class="features-list" tabindex="0" aria-live="polite" aria-relevant="additions">
+      <!-- Features inserted by JS -->
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script>
+    // Firebase config - replace with your own
+    const firebaseConfig = {
+      apiKey: "AIzaSyDsm1U6e-4ZTi0WGBAbj1LUWOA63xpQVD0",
+      authDomain: "js-world-64c90.firebaseapp.com",
+      databaseURL: "https://js-world-64c90-default-rtdb.firebaseio.com",
+      projectId: "js-world-64c90",
+      storageBucket: "js-world-64c90.firebasestorage.app",
+      messagingSenderId: "240128005952",
+      appId: "1:240128005952:android:b7f1a21647514efbe80ca5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    const featuresList = document.querySelector('.features-list');
+    const closeBtn = document.getElementById('closeBtn');
+
+    // Load features from Firebase node: 'appFeatures'
+    function loadFeatures() {
+      database.ref('appFeatures').once('value').then(snapshot => {
+        const features = snapshot.val();
+        if (!features) {
+          featuresList.innerHTML = '<p style="color:#004d40cc; font-style:italic;">No new features to display.</p>';
+          return;
+        }
+        // Clear previous
+        featuresList.innerHTML = '';
+        // For each feature: {title, description, icon}
+        Object.values(features).forEach(feature => {
+          const item = document.createElement('div');
+          item.classList.add('feature-item');
+          item.innerHTML = `
+            <div class="feature-icon" aria-hidden="true">${feature.icon || '⭐'}</div>
+            <div class="feature-text">
+              <div class="feature-title">${feature.title || 'Untitled feature'}</div>
+              <div class="feature-desc">${feature.description || ''}</div>
+            </div>
+          `;
+          featuresList.appendChild(item);
+        });
+      }).catch(err => {
+        featuresList.innerHTML = '<p style="color:#d32f2f; font-weight:bold;">Failed to load features.</p>';
+        console.error('Firebase load error:', err);
+      });
+    }
+
+    loadFeatures();
+
+    // Close button logic - go back to login page
+    closeBtn.addEventListener('click', () => {
+      // Optionally add fadeout effect
+      document.body.style.opacity = '0';
+      setTimeout(() => {
+        window.location.href = 'home.html';
+      }, 300);
+    });
+
+    // Optional fade-in effect on page load
+    document.body.style.opacity = '0';
+    window.onload = () => {
+      document.body.style.transition = 'opacity 0.3s ease';
+      document.body.style.opacity = '1';
+    };
+  </script>
+</body>
+</html>

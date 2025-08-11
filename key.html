@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Enter Key - JS MODS</title>
+  <style>
+    /* Reset & base */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    html, body {
+      height: 600px; /* typical phone viewport height */
+      max-width: 400px;
+      margin: 20px auto; /* center page on desktop */
+      border-radius: 30px;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f0f4f8, #ffffff);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      color: #004d40;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      background: #e0e5ec;
+    }
+    main {
+      max-width: 380px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 18px;
+      padding: 40px 30px 50px;
+      box-shadow:
+        inset 0 0 10px #ffffff,
+        0 4px 30px rgba(0, 77, 64, 0.1);
+      backdrop-filter: blur(10px);
+      color: #004d40;
+      user-select: text;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      border: 1px solid #c7ccd1;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+      user-select: text;
+      color: #00796b;
+    }
+    label {
+      font-weight: 600;
+      font-size: 1rem;
+      user-select: text;
+      text-align: left;
+      color: #004d40cc;
+    }
+    .input-container {
+      position: relative;
+      width: 100%;
+    }
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 14px 50px 14px 16px;
+      font-size: 1.2rem;
+      border: 2px solid #00796b;
+      border-radius: 40px;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: text;
+      color: #004d40;
+      background: #fefefe;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.07);
+    }
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+      border-color: #004d40;
+      box-shadow: 0 0 8px 3px rgba(0, 121, 107, 0.25);
+    }
+    .toggle-visibility {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #00796bcc;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+    .toggle-visibility:hover,
+    .toggle-visibility:focus {
+      color: #004d40;
+      outline: none;
+    }
+    button#getAccessBtn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 18px 0;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ffffff;
+      background: #00796b;
+      border: none;
+      border-radius: 40px;
+      cursor: not-allowed;
+      opacity: 0.5;
+      box-shadow: 0 8px 15px rgba(0, 121, 107, 0.45);
+      transition:
+        background-color 0.3s ease,
+        opacity 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.2s ease;
+      user-select: none;
+    }
+    button#getAccessBtn.enabled {
+      cursor: pointer;
+      opacity: 1;
+    }
+    button#getAccessBtn.enabled:hover,
+    button#getAccessBtn.enabled:focus {
+      background: #004d40;
+      box-shadow: 0 10px 20px rgba(0, 77, 64, 0.7);
+      outline: none;
+      transform: scale(1.03);
+    }
+
+    /* New button styling - same style as getAccessBtn but slightly different color */
+    button#getAccessKeyBtn {
+      margin-top: 8px;
+      width: 100%;
+      padding: 18px 0;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ffffff;
+      background: #004d40;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      opacity: 1;
+      box-shadow: 0 8px 15px rgba(0, 77, 64, 0.6);
+      transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.2s ease;
+      user-select: none;
+    }
+    button#getAccessKeyBtn:hover,
+    button#getAccessKeyBtn:focus {
+      background: #006655;
+      outline: none;
+      box-shadow: 0 10px 20px rgba(0, 102, 85, 0.8);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <main role="main" aria-label="Enter access key screen">
+    <h1>Enter Access Key</h1>
+
+    <label for="keyInput">Access Key</label>
+    <div class="input-container">
+      <input type="password" id="keyInput" aria-describedby="keyHelp" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
+      <button
+        type="button"
+        id="toggleVisibility"
+        aria-label="Show or hide access key"
+        aria-pressed="false"
+        class="toggle-visibility"
+        tabindex="0"
+      >👁️</button>
+    </div>
+
+    <div id="errorMsg" class="error-message" role="alert" aria-live="assertive"></div>
+
+    <button id="getAccessBtn" aria-disabled="true" disabled>GET ACCESS</button>
+    <button id="getAccessKeyBtn">GET ACCESS KEY</button>
+  </main>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script>
+    // Your Firebase config - Replace these with your actual config values from Firebase Console
+    const firebaseConfig = {
+      apiKey: "AIzaSyDsm1U6e-4ZTi0WGBAbj1LUWOA63xpQVD0",
+      authDomain: "js-world-64c90.firebaseapp.com",
+      databaseURL: "https://js-world-64c90-default-rtdb.firebaseio.com",
+      projectId: "js-world-64c90",
+      storageBucket: "js-world-64c90.firebasestorage.app",
+      messagingSenderId: "240128005952",
+      appId: "1:240128005952:android:b7f1a21647514efbe80ca5"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Check if update screen should be shown
+    database.ref('showUpdateScreen').once('value').then(snapshot => {
+      if (snapshot.val() === true) {
+        window.location.href = 'update.html'; // Redirect to update screen if enabled
+      }
+    }).catch(err => {
+      console.error('Firebase error:', err);
+      // fallback: continue to show key.html normally
+    });
+
+    const keyInput = document.getElementById('keyInput');
+    const toggleVisibility = document.getElementById('toggleVisibility');
+    const getAccessBtn = document.getElementById('getAccessBtn');
+    const getAccessKeyBtn = document.getElementById('getAccessKeyBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    let wrongAttempts = 0;
+    let isBlocked = false;
+    let blockTimeout = null;
+
+    // Load saved key from localStorage if exists
+    const savedKey = localStorage.getItem('savedAccessKey');
+    if (savedKey) {
+      keyInput.value = savedKey;
+      getAccessBtn.disabled = false;
+      getAccessBtn.classList.add('enabled');
+      getAccessBtn.setAttribute('aria-disabled', 'false');
+    }
+
+    // Toggle password visibility
+    toggleVisibility.addEventListener('click', () => {
+      if (keyInput.type === 'password') {
+        keyInput.type = 'text';
+        toggleVisibility.setAttribute('aria-pressed', 'true');
+        toggleVisibility.textContent = '🙈';
+      } else {
+        keyInput.type = 'password';
+        toggleVisibility.setAttribute('aria-pressed', 'false');
+        toggleVisibility.textContent = '👁️';
+      }
+      keyInput.focus();
+    });
+
+    // Enable/disable GET ACCESS button based on input (only if not blocked)
+    keyInput.addEventListener('input', () => {
+      if (isBlocked) return; // ignore input while blocked
+      if (keyInput.value.trim().length > 0) {
+        getAccessBtn.disabled = false;
+        getAccessBtn.classList.add('enabled');
+        getAccessBtn.setAttribute('aria-disabled', 'false');
+        errorMsg.classList.remove('visible');
+        errorMsg.textContent = '';
+      } else {
+        getAccessBtn.disabled = true;
+        getAccessBtn.classList.remove('enabled');
+        getAccessBtn.setAttribute('aria-disabled', 'true');
+      }
+    });
+
+    // Validate key on button click
+    getAccessBtn.addEventListener('click', () => {
+      if (isBlocked) return;
+
+      const enteredKey = keyInput.value.trim();
+      if (enteredKey.length === 0) return;
+
+      // Fetch key from Firebase
+      database.ref('accessKey').once('value')
+        .then(snapshot => {
+          const correctKey = snapshot.val();
+          if (enteredKey === correctKey) {
+            // Save key locally for remember me feature
+            localStorage.setItem('savedAccessKey', enteredKey);
+
+            // Success: redirect to home.html
+            window.location.href = 'whatsnew.html';
+          } else {
+            wrongAttempts++;
+            if (wrongAttempts >= 3) {
+              blockUser();
+            } else {
+              // Error message for wrong attempt
+              errorMsg.textContent = `❌ Incorrect key. You have ${3 - wrongAttempts} attempt(s) left.`;
+              errorMsg.classList.add('visible');
+              keyInput.focus();
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Firebase error:', error);
+          errorMsg.textContent = '⚠️ Unable to verify key. Try again later.';
+          errorMsg.classList.add('visible');
+        });
+    });
+
+    function blockUser() {
+      isBlocked = true;
+      let secondsLeft = 10;
+
+      // Disable input and button
+      keyInput.disabled = true;
+      getAccessBtn.disabled = true;
+      getAccessBtn.classList.remove('enabled');
+      getAccessBtn.setAttribute('aria-disabled', 'true');
+
+      errorMsg.textContent = `🚫 Too many wrong attempts. Please wait ${secondsLeft} seconds and/or click "GET ACCESS KEY" below.`;
+      errorMsg.classList.add('visible');
+
+      blockTimeout = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft > 0) {
+          errorMsg.textContent = `🚫 Too many wrong attempts. Please wait ${secondsLeft} seconds and/or click "GET ACCESS KEY" below.`;
+        } else {
+          clearInterval(blockTimeout);
+          unblockUser();
+        }
+      }, 1000);
+    }
+
+    function unblockUser() {
+      isBlocked = false;
+      wrongAttempts = 0;
+      errorMsg.textContent = '';
+      errorMsg.classList.remove('visible');
+      keyInput.disabled = false;
+      keyInput.value = '';
+      keyInput.focus();
+
+      // Disable GET ACCESS button until user inputs
+      getAccessBtn.disabled = true;
+      getAccessBtn.classList.remove('enabled');
+      getAccessBtn.setAttribute('aria-disabled', 'true');
+
+      // Remove saved key when user unblocks so they have to re-enter next time
+      localStorage.removeItem('savedAccessKey');
+    }
+
+    // Accessibility: allow Enter key to trigger GET ACCESS
+    keyInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !getAccessBtn.disabled && !isBlocked) {
+        e.prevente.preventDefault();
+        getAccessBtn.click();
+      }
+    });
+
+    // New button: GET ACCESS KEY
+    getAccessKeyBtn.addEventListener('click', () => {
+      // Fetch the URL from Firebase and open it with "chooser"
+      database.ref('accessKeyLink').once('value')
+        .then(snapshot => {
+          const url = snapshot.val();
+          if (url) {
+            // Open in new window/tab - browser will offer open-with options
+            window.open(url, '_blank', 'noopener,noreferrer');
+          } else {
+            alert('Access key link is not set by admin.');
+          }
+        })
+        .catch(error => {
+          console.error('Firebase error:', error);
+          alert('Failed to fetch the access key link. Try again later.');
+        });
+    });
+  </script>
+</body>
+</html>
